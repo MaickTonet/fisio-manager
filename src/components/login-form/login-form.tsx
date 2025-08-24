@@ -5,11 +5,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui-components/input'
 import { Label } from '@/components/ui-components/label'
 import { Separator } from '@/components/ui-components/separator'
+import { authClient } from '@/lib/auth-client'
 import { cn } from '@/lib/utils'
 import { loginSchema } from '@/types/schemas/login-schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ArrowRight, Eye, EyeOff, Lock, Mail } from 'lucide-react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import z from 'zod'
@@ -19,6 +21,7 @@ import { GoogleIcon } from '../custom-icons/google-icon'
 type LoginFormData = z.infer<typeof loginSchema>
 
 export default function LoginForm() {
+  const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
 
   const {
@@ -28,8 +31,10 @@ export default function LoginForm() {
   } = useForm<LoginFormData>({ resolver: zodResolver(loginSchema), mode: 'onChange' })
 
   const onSubmit = async (data: LoginFormData) => {
-    await new Promise((resolve) => setTimeout(resolve, 2000))
-    console.log('Login data:', data)
+    await authClient.signIn.email(
+      { email: data.email, password: data.password },
+      { onSuccess: (ctx) => router.push('/profile'), onError: (ctx) => alert(ctx.error.message) },
+    )
   }
 
   return (

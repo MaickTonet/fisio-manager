@@ -1,10 +1,12 @@
 'use client'
 
+import { authClient } from '@/lib/auth-client'
 import { cn } from '@/lib/utils'
 import { signupSchema } from '@/types/schemas/signup-schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ArrowRight, Check, Eye, EyeOff, Lock, Mail, User, X } from 'lucide-react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import z from 'zod'
@@ -25,9 +27,9 @@ interface PasswordRequirement {
 }
 
 export default function SignupForm() {
+  const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [, setIsGoogleLoading] = useState(false)
 
   const {
     register,
@@ -49,13 +51,10 @@ export default function SignupForm() {
   ]
 
   const onSubmit = async (data: SignupFormData) => {
-    await new Promise((resolve) => setTimeout(resolve, 2000))
-    console.log('Signup data:', data)
-  }
-
-  const handleGoogleSignup = async () => {
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-    console.log('Google signup')
+    await authClient.signUp.email(
+      { email: data.email, password: data.password, name: data.name },
+      { onSuccess: (ctx) => router.push('/profile'), onError: (ctx) => alert(ctx.error.message) },
+    )
   }
 
   return (
@@ -70,12 +69,7 @@ export default function SignupForm() {
           </CardHeader>
 
           <CardContent className='space-y-6'>
-            <Button
-              type='button'
-              variant='outline'
-              className='h-12 w-full cursor-pointer border-gray-200 transition-all duration-200 hover:bg-gray-50'
-              onClick={handleGoogleSignup}
-            >
+            <Button type='button' variant='outline' className='h-12 w-full cursor-pointer border-gray-200 transition-all duration-200 hover:bg-gray-50'>
               <GoogleIcon />
               Criar conta com Google
             </Button>
