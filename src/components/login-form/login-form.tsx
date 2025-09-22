@@ -37,6 +37,16 @@ export default function LoginForm() {
     )
   }
 
+  const handleGoogleSignIn = async () => {
+    const data = await authClient.signIn.social(
+      { provider: 'google' },
+      {
+        onSuccess: (ctx) => router.push('/dashboard'),
+        onError: (ctx) => alert(ctx.error.message),
+      },
+    )
+  }
+
   return (
     <main className='flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 via-white to-emerald-50 p-4'>
       <section className='w-full max-w-md'>
@@ -51,7 +61,12 @@ export default function LoginForm() {
           </CardHeader>
 
           <CardContent className='space-y-6'>
-            <Button type='button' variant='outline' className='h-12 w-full cursor-pointer border-gray-200 transition-colors duration-200 hover:bg-gray-50'>
+            <Button
+              type='button'
+              onClick={handleGoogleSignIn}
+              variant='outline'
+              className='h-12 w-full cursor-pointer border-gray-200 transition-colors duration-200 hover:bg-gray-50'
+            >
               <GoogleIcon />
               Continuar com Google
             </Button>
