@@ -13,6 +13,7 @@ import { ContactInfoStep } from './new-appointment-form-steps/contact-info-step'
 import { MedicalInfoStep } from './new-appointment-form-steps/medical-info-step'
 import { PersonalInfoStep } from './new-appointment-form-steps/personal-info-step'
 import { ScheduleStep } from './new-appointment-form-steps/schedule-step'
+import { createAppointment } from '@/actions/new-appointment'
 
 export type FormData = z.infer<typeof newAppointmentSchema>
 
@@ -71,10 +72,16 @@ export function NewAppointmentForm() {
     }
   }
 
-  const onSubmit = (data: FormData) => {
-    console.log('Form submitted:', data)
-    // Here you would typically send the data to your backend
-    alert('Agendamento realizado com sucesso!')
+  const onSubmit = async (data: FormData) => {
+    try {
+      await createAppointment(data)
+      alert('Agendamento realizado com sucesso!')
+      form.reset()
+      setCurrentStep(1)
+    } catch (err) {
+      console.error(err)
+      alert('Erro ao salvar agendamento')
+    }
   }
 
   const getFieldsForStep = (step: number): (keyof FormData)[] => {
@@ -154,13 +161,19 @@ export function NewAppointmentForm() {
             {renderStep()}
 
             <div className='flex flex-wrap justify-between gap-y-4 border-t pt-6'>
-              <Button type='button' variant='outline' onClick={previousStep} disabled={currentStep === 1} className='flex items-center space-x-2 w-full sm:w-fit'>
+              <Button
+                type='button'
+                variant='outline'
+                onClick={previousStep}
+                disabled={currentStep === 1}
+                className='flex w-full items-center space-x-2 sm:w-fit'
+              >
                 <ChevronLeft className='h-4 w-4' />
                 <span>Anterior</span>
               </Button>
 
               {currentStep < 4 ? (
-                <Button type='button' onClick={nextStep} className='flex items-center space-x-2 w-full sm:w-fit'>
+                <Button type='button' onClick={nextStep} className='flex w-full items-center space-x-2 sm:w-fit'>
                   <span>Próximo</span>
                   <ChevronRight className='h-4 w-4' />
                 </Button>

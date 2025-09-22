@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, boolean } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, boolean, integer } from "drizzle-orm/pg-core";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -58,4 +58,44 @@ export const verification = pgTable("verification", {
   updatedAt: timestamp("updated_at").$defaultFn(
     () => /* @__PURE__ */ new Date(),
   ),
+});
+
+export const appointments = pgTable("appointments", {
+  id: text("id").primaryKey(),
+
+  patientName: text("patient_name").notNull(),
+  birthDate: timestamp("birth_date", { mode: "date" }).notNull(),
+  age: integer("age").notNull(),
+  gender: text("gender").notNull(), 
+  maritalStatus: text("marital_status").notNull(),
+
+  // Contact Information
+  phone: text("phone").notNull(),
+  commercialPhone: text("commercial_phone"),
+  address: text("address").notNull(),
+  neighborhood: text("neighborhood").notNull(),
+  city: text("city").notNull(),
+  state: text("state").notNull(),
+  zipCode: text("zip_code").notNull(),
+  emergencyContact: text("emergency_contact").notNull(),
+
+  education: text("education").notNull(),
+  profession: text("profession").notNull(),
+  clinicalDiagnosis: text("clinical_diagnosis"),
+  symptoms: text("symptoms").array(),
+  symptomsDescription: text("symptoms_description"),
+  hasInsurance: boolean("has_insurance").notNull(),
+  insuranceDescription: text("insurance_description"),
+
+  selectedDate: timestamp("selected_date", { mode: "date" }).notNull(),
+  selectedTime: text("selected_time").notNull(),
+
+  createdAt: timestamp("created_at")
+    .$defaultFn(() => /* @__PURE__ */ new Date())
+    .notNull(),
+  updatedAt: timestamp("updated_at")
+    .$defaultFn(() => /* @__PURE__ */ new Date())
+    .notNull(),
+
+  userId: text("user_id").references(() => user.id, { onDelete: "set null" }),
 });
