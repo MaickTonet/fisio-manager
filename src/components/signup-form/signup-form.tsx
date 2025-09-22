@@ -53,7 +53,7 @@ export default function SignupForm() {
   const onSubmit = async (data: SignupFormData) => {
     await authClient.signUp.email(
       { email: data.email, password: data.password, name: data.name },
-      { onSuccess: (ctx) => router.push('/profile'), onError: (ctx) => alert(ctx.error.message) },
+      { onSuccess: (ctx) => router.push('/dashboard'), onError: (ctx) => alert(ctx.error.message) },
     )
   }
 

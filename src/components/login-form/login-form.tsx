@@ -33,7 +33,7 @@ export default function LoginForm() {
   const onSubmit = async (data: LoginFormData) => {
     await authClient.signIn.email(
       { email: data.email, password: data.password },
-      { onSuccess: (ctx) => router.push('/profile'), onError: (ctx) => alert(ctx.error.message) },
+      { onSuccess: (ctx) => router.push('/dashboard'), onError: (ctx) => alert(ctx.error.message) },
     )
   }
 
