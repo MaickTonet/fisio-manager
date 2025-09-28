@@ -6,7 +6,7 @@
 body {
   --sb-track-color: #ffffff;
   --sb-thumb-color: #cccbcb;
-  --sb-size: 20px;
+  --sb-size: 8px;
 }
 
 body::-webkit-scrollbar {
@@ -21,7 +21,6 @@ body::-webkit-scrollbar-track {
 body::-webkit-scrollbar-thumb {
   background: var(--sb-thumb-color);
   border-radius: 50px;
-  border: 6px solid #ffffff;
 }
 
 @supports not selector(::-webkit-scrollbar) {

@@ -33,7 +33,7 @@ export default function LoginForm() {
   const onSubmit = async (data: LoginFormData) => {
     await authClient.signIn.email(
       { email: data.email, password: data.password },
-      { onSuccess: (ctx) => router.push('/dashboard'), onError: (ctx) => alert(ctx.error.message) },
+      { onSuccess: (ctx) => router.push('/'), onError: (ctx) => alert(ctx.error.message) },
     )
   }
 
@@ -41,7 +41,7 @@ export default function LoginForm() {
     const data = await authClient.signIn.social(
       { provider: 'google' },
       {
-        onSuccess: (ctx) => router.push('/dashboard'),
+        onSuccess: (ctx) => router.push('/'),
         onError: (ctx) => alert(ctx.error.message),
       },
     )

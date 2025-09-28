@@ -53,7 +53,7 @@ export default function SignupForm() {
   const onSubmit = async (data: SignupFormData) => {
     await authClient.signUp.email(
       { email: data.email, password: data.password, name: data.name },
-      { onSuccess: (ctx) => router.push('/dashboard'), onError: (ctx) => alert(ctx.error.message) },
+      { onSuccess: (ctx) => router.push('/'), onError: (ctx) => alert(ctx.error.message) },
     )
   }
 
@@ -61,7 +61,7 @@ export default function SignupForm() {
     await authClient.signIn.social(
       { provider: 'google' },
       {
-        onSuccess: (ctx) => router.push('/dashboard'),
+        onSuccess: (ctx) => router.push('/'),
         onError: (ctx) => alert(ctx.error.message),
       },
     )
