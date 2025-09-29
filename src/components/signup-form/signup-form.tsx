@@ -9,9 +9,11 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import z from 'zod'
 import FisioAgendaHeaderIcon from '../custom-icons/fisio-agenda-header-icon'
 import { GoogleIcon } from '../custom-icons/google-icon'
+import { ErrorToast, SuccessToast } from '../custom-toasts/custom-toasts'
 import { Button } from '../ui-components/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui-components/card'
 import { Input } from '../ui-components/input'
@@ -53,7 +55,15 @@ export default function SignupForm() {
   const onSubmit = async (data: SignupFormData) => {
     await authClient.signUp.email(
       { email: data.email, password: data.password, name: data.name },
-      { onSuccess: (ctx) => router.push('/'), onError: (ctx) => alert(ctx.error.message) },
+      {
+        onSuccess: () => {
+          router.push('/')
+          toast.custom(() => <SuccessToast label='Conta criada com sucesso!' />)
+        },
+        onError: () => {
+          toast.custom(() => <ErrorToast label='Falha ao criar conta!' />)
+        },
+      },
     )
   }
 
@@ -61,8 +71,13 @@ export default function SignupForm() {
     await authClient.signIn.social(
       { provider: 'google' },
       {
-        onSuccess: (ctx) => router.push('/'),
-        onError: (ctx) => alert(ctx.error.message),
+        onSuccess: () => {
+          router.push('/')
+          toast.custom(() => <SuccessToast label='Conta criada com sucesso!' />)
+        },
+        onError: () => {
+          toast.custom(() => <ErrorToast label='Falha ao criar conta!' />)
+        },
       },
     )
   }
@@ -210,18 +225,6 @@ export default function SignupForm() {
                 {errors.confirmPassword && <p className='animate-in slide-in-from-left-1 text-sm font-medium text-red-600'>{errors.confirmPassword.message}</p>}
               </fieldset>
 
-              <footer className='rounded-lg bg-gray-50 p-3 text-xs text-gray-600'>
-                Ao criar uma conta, você concorda com nossos{' '}
-                <Link href='#' className='font-medium text-blue-600 hover:text-blue-800'>
-                  Termos de Uso
-                </Link>{' '}
-                e{' '}
-                <Link href='#' className='font-medium text-blue-600 hover:text-blue-800'>
-                  Política de Privacidade
-                </Link>
-                .
-              </footer>
-
               <Button
                 type='submit'
                 className='h-12 w-full cursor-pointer bg-gradient-to-r from-blue-600 to-emerald-600 font-medium text-white shadow-lg transition-all duration-200 hover:from-blue-700 hover:to-emerald-700 hover:shadow-xl'
@@ -251,10 +254,6 @@ export default function SignupForm() {
             </div>
           </CardContent>
         </Card>
-
-        <footer className='mt-8 text-center'>
-          <p className='text-xs text-gray-500'>© 2025 FisioAgenda. Todos os direitos reservados.</p>
-        </footer>
       </div>
     </main>
   )

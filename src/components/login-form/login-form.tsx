@@ -14,9 +14,11 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import z from 'zod'
 import FisioAgendaHeaderIcon from '../custom-icons/fisio-agenda-header-icon'
 import { GoogleIcon } from '../custom-icons/google-icon'
+import { ErrorToast, SuccessToast } from '../custom-toasts/custom-toasts'
 
 type LoginFormData = z.infer<typeof loginSchema>
 
@@ -33,7 +35,15 @@ export default function LoginForm() {
   const onSubmit = async (data: LoginFormData) => {
     await authClient.signIn.email(
       { email: data.email, password: data.password },
-      { onSuccess: (ctx) => router.push('/'), onError: (ctx) => alert(ctx.error.message) },
+      {
+        onSuccess: () => {
+          router.push('/')
+          toast.custom(() => <SuccessToast label='Login realizado com sucesso!' />)
+        },
+        onError: () => {
+          toast.custom(() => <ErrorToast label='Falha ao realizar login!' />)
+        },
+      },
     )
   }
 
@@ -41,8 +51,13 @@ export default function LoginForm() {
     const data = await authClient.signIn.social(
       { provider: 'google' },
       {
-        onSuccess: (ctx) => router.push('/'),
-        onError: (ctx) => alert(ctx.error.message),
+        onSuccess: () => {
+          router.push('/')
+          toast.custom(() => <SuccessToast label='Login realizado com sucesso!' />)
+        },
+        onError: () => {
+          toast.custom(() => <ErrorToast label='Falha ao realizar login!' />)
+        },
       },
     )
   }

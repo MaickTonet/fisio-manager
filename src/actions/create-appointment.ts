@@ -1,14 +1,20 @@
 'use server'
 
 import { db } from '@/database/database'
-import { appointments } from '@/database/schema'
+import { appointment } from '@/database/schema'
+import { auth } from '@/lib/auth'
 import { newAppointmentSchema } from '@/types/schemas/new-appointment-schema'
+import { headers } from 'next/headers'
 import { z } from 'zod'
 
 export async function createAppointment(values: z.infer<typeof newAppointmentSchema>) {
   const parsed = newAppointmentSchema.parse(values)
 
-  await db.insert(appointments).values({
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  })
+
+  await db.insert(appointment).values({
     id: crypto.randomUUID(),
     patientName: parsed.patientName,
     birthDate: parsed.birthDate,
@@ -34,7 +40,7 @@ export async function createAppointment(values: z.infer<typeof newAppointmentSch
     selectedTime: parsed.selectedTime,
     createdAt: new Date(),
     updatedAt: new Date(),
-    // se quiser associar ao usuário logado:
-    // userId: session?.user.id,
+    userId: session?.user.id,
+    status: 'new',
   })
 }

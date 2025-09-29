@@ -1,6 +1,5 @@
 import { Badge } from '@/components/ui-components/badge'
 import { db } from '@/database/database'
-import { appointments } from '@/database/schema'
 import { eq } from 'drizzle-orm'
 import { ArrowLeft, Briefcase, Calendar, CheckCircle, Clock, Eye, FileText, GraduationCap, Heart, Mail, MapPin, Phone, Shield, User } from 'lucide-react'
 import { notFound } from 'next/navigation'
@@ -12,7 +11,7 @@ interface AppointmentSuccessPageProps {
 export default async function AppointmentSuccessPage({ params }: AppointmentSuccessPageProps) {
   const { id } = params
 
-  const appointment = await db.query.appointments.findFirst({ where: eq(appointments.id, id) })
+  const appointment = await db.query.appointments.findFirst({ where: eq(appointment.id, id) })
 
   if (!appointment) notFound()
 

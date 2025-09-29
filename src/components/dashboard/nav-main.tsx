@@ -1,20 +1,10 @@
 'use client'
 
-import { type Icon } from '@tabler/icons-react'
-
 import { SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui-components/sidebar'
 import { CirclePlus, LayoutDashboard, List, Table } from 'lucide-react'
 import Link from 'next/link'
 
-export function NavMain({
-  items,
-}: {
-  items: {
-    title: string
-    url: string
-    icon?: Icon
-  }[]
-}) {
+export function NavMain() {
   return (
     <SidebarGroup>
       <SidebarGroupContent className='flex flex-col gap-2'>

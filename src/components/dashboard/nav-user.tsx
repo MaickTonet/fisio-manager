@@ -54,7 +54,7 @@ export function NavUser() {
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className='w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg'
+            className='w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-xl'
             side={isMobile ? 'bottom' : 'right'}
             align='end'
             sideOffset={4}
@@ -73,13 +73,13 @@ export function NavUser() {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem className='rounded-lg'>
                 <IconUserCircle />
                 Minha conta
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout}>
+            <DropdownMenuItem onClick={handleLogout} className='rounded-lg'>
               <IconLogout />
               Sair
             </DropdownMenuItem>

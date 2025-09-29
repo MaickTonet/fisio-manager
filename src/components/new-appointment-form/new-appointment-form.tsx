@@ -13,7 +13,8 @@ import { ContactInfoStep } from './new-appointment-form-steps/contact-info-step'
 import { MedicalInfoStep } from './new-appointment-form-steps/medical-info-step'
 import { PersonalInfoStep } from './new-appointment-form-steps/personal-info-step'
 import { ScheduleStep } from './new-appointment-form-steps/schedule-step'
-import { createAppointment } from '@/actions/new-appointment'
+import { createAppointment } from '@/actions/create-appointment'
+import { useRouter } from 'next/navigation'
 
 export type FormData = z.infer<typeof newAppointmentSchema>
 
@@ -46,6 +47,7 @@ const steps = [
 
 export function NewAppointmentForm() {
   const [currentStep, setCurrentStep] = useState(1)
+  const router = useRouter()
 
   const form = useForm<FormData>({
     resolver: zodResolver(newAppointmentSchema),
@@ -78,6 +80,7 @@ export function NewAppointmentForm() {
       alert('Agendamento realizado com sucesso!')
       form.reset()
       setCurrentStep(1)
+      router.push('/')
     } catch (err) {
       console.error(err)
       alert('Erro ao salvar agendamento')
