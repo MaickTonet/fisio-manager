@@ -7,6 +7,7 @@ import { ColumnDef } from '@tanstack/react-table'
 
 import StatusBadge from '@/components/status-badge-map/status-badge'
 import { IconDotsVertical } from '@tabler/icons-react'
+import Link from 'next/link'
 import { z } from 'zod'
 
 export const schema = z.object({
@@ -38,7 +39,13 @@ export const columns: ColumnDef<z.infer<typeof schema>>[] = [
   {
     accessorKey: 'patientName',
     header: () => <div className='ml-2'>Nome do paciente</div>,
-    cell: ({ row }) => <div className='ml-2 truncate'>{row.original.patientName}</div>,
+    cell: ({ row }) => (
+      <div className='ml-2 truncate'>
+        <Link className='hover:text-primary transition-colors hover:underline' href={`/appointment/${row.original.id}`}>
+          {row.original.patientName}
+        </Link>
+      </div>
+    ),
   },
   {
     accessorKey: 'status',

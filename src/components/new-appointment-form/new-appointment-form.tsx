@@ -1,11 +1,15 @@
 'use client'
 
+import { createAppointment } from '@/actions/create-appointment'
 import { newAppointmentSchema } from '@/types/schemas/new-appointment-schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Calendar, ChevronLeft, ChevronRight, Clock, FileText, User } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import * as z from 'zod'
+import { ErrorToast, SuccessToast } from '../custom-toasts/custom-toasts'
 import { Button } from '../ui-components/button'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui-components/card'
 import { Progress } from '../ui-components/progress'
@@ -13,8 +17,6 @@ import { ContactInfoStep } from './new-appointment-form-steps/contact-info-step'
 import { MedicalInfoStep } from './new-appointment-form-steps/medical-info-step'
 import { PersonalInfoStep } from './new-appointment-form-steps/personal-info-step'
 import { ScheduleStep } from './new-appointment-form-steps/schedule-step'
-import { createAppointment } from '@/actions/create-appointment'
-import { useRouter } from 'next/navigation'
 
 export type FormData = z.infer<typeof newAppointmentSchema>
 
@@ -77,13 +79,13 @@ export function NewAppointmentForm() {
   const onSubmit = async (data: FormData) => {
     try {
       await createAppointment(data)
-      alert('Agendamento realizado com sucesso!')
+      toast.custom(() => <SuccessToast label='Agendamento realizado com sucesso!' />)
       form.reset()
       setCurrentStep(1)
       router.push('/')
     } catch (err) {
       console.error(err)
-      alert('Erro ao salvar agendamento')
+      toast.custom(() => <ErrorToast label='Erro ao salvar agendamento!' />)
     }
   }
 

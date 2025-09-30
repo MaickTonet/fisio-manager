@@ -1,13 +1,8 @@
 import clsx from 'clsx'
 import { Check, Clock, User } from 'lucide-react'
 import { ReactNode } from 'react'
+import { statusBadgeMap } from '../../utils/maps/status-badge-map'
 import { Badge } from '../ui-components/badge'
-
-const statusBadgeMap: Record<string, string> = {
-  new: 'Novo',
-  assigned: 'Atribuído',
-  done: 'Finaliado',
-}
 
 const statusBadgeIconMap: Record<string, ReactNode> = {
   new: <Clock />,

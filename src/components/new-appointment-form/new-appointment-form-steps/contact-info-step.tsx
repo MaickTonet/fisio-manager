@@ -3,92 +3,16 @@
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui-components/form'
 import { Input } from '@/components/ui-components/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui-components/select'
-import { useState } from 'react'
+import { useZipCodeSearch } from '@/hooks/use-search-city-by-zip-code'
+import { brazilianStates } from '@/utils/brazilian-states'
+import { formatPhone } from '@/utils/format-phone'
+import { formatZipCode } from '@/utils/format-zip-code'
 import { useFormContext } from 'react-hook-form'
 import { FormData } from '../new-appointment-form'
 
-const brazilianStates = [
-  { value: 'AC', label: 'Acre' },
-  { value: 'AL', label: 'Alagoas' },
-  { value: 'AP', label: 'Amapá' },
-  { value: 'AM', label: 'Amazonas' },
-  { value: 'BA', label: 'Bahia' },
-  { value: 'CE', label: 'Ceará' },
-  { value: 'DF', label: 'Distrito Federal' },
-  { value: 'ES', label: 'Espírito Santo' },
-  { value: 'GO', label: 'Goiás' },
-  { value: 'MA', label: 'Maranhão' },
-  { value: 'MT', label: 'Mato Grosso' },
-  { value: 'MS', label: 'Mato Grosso do Sul' },
-  { value: 'MG', label: 'Minas Gerais' },
-  { value: 'PA', label: 'Pará' },
-  { value: 'PB', label: 'Paraíba' },
-  { value: 'PR', label: 'Paraná' },
-  { value: 'PE', label: 'Pernambuco' },
-  { value: 'PI', label: 'Piauí' },
-  { value: 'RJ', label: 'Rio de Janeiro' },
-  { value: 'RN', label: 'Rio Grande do Norte' },
-  { value: 'RS', label: 'Rio Grande do Sul' },
-  { value: 'RO', label: 'Rondônia' },
-  { value: 'RR', label: 'Roraima' },
-  { value: 'SC', label: 'Santa Catarina' },
-  { value: 'SP', label: 'São Paulo' },
-  { value: 'SE', label: 'Sergipe' },
-  { value: 'TO', label: 'Tocantins' },
-]
-
 export function ContactInfoStep() {
   const form = useFormContext<FormData>()
-  const [zipCodeCity, setZipCodeCity] = useState<string>('')
-  const [zipCodeError, setZipCodeError] = useState<string>('')
-
-  const formatPhone = (value: string) => {
-    const cleaned = value.replace(/\D/g, '')
-    const match = cleaned.match(/^(\d{2})(\d{5})(\d{4})$/)
-    if (match) {
-      return `(${match[1]}) ${match[2]}-${match[3]}`
-    }
-    return cleaned.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3')
-  }
-
-  const formatZipCode = (value: string) => {
-    const cleaned = value.replace(/\D/g, '')
-    return cleaned.replace(/(\d{5})(\d{3})/, '$1-$2')
-  }
-
-  const searchCityByZipCode = async (zipCode: string) => {
-    const cleanZipCode = zipCode.replace(/\D/g, '')
-    if (cleanZipCode.length === 8) {
-      try {
-        const response = await fetch(`https://viacep.com.br/ws/${cleanZipCode}/json/`)
-        const data = await response.json()
-
-        if (data.erro) {
-          setZipCodeError('CEP não encontrado')
-          setZipCodeCity('')
-        } else {
-          setZipCodeError('')
-          setZipCodeCity(data.localidade)
-          // Auto-fill city and state if they're empty
-          if (!form.getValues('city')) {
-            form.setValue('city', data.localidade)
-          }
-          if (!form.getValues('state')) {
-            form.setValue('state', data.uf)
-          }
-          if (!form.getValues('neighborhood')) {
-            form.setValue('neighborhood', data.bairro || '')
-          }
-        }
-      } catch (error) {
-        setZipCodeError('Erro ao buscar CEP')
-        setZipCodeCity('')
-      }
-    } else {
-      setZipCodeCity('')
-      setZipCodeError('')
-    }
-  }
+  const { zipCodeCity, zipCodeError, searchCityByZipCode } = useZipCodeSearch(form.getValues, form.setValue)
 
   return (
     <div className='space-y-6'>
