@@ -174,18 +174,22 @@ export function NewAppointmentForm() {
                 className='flex w-full items-center space-x-2 sm:w-fit'
               >
                 <ChevronLeft className='h-4 w-4' />
-                <span>Anterior</span>
+                <p>Anterior</p>
               </Button>
 
               {currentStep < 4 ? (
                 <Button type='button' onClick={nextStep} className='flex w-full items-center space-x-2 sm:w-fit'>
-                  <span>Próximo</span>
+                  <p>Próximo</p>
                   <ChevronRight className='h-4 w-4' />
                 </Button>
               ) : (
-                <Button type='submit' className='flex w-full items-center space-x-2 bg-green-600 hover:bg-green-700 sm:w-fit'>
+                <Button
+                  type='submit'
+                  disabled={!form.formState.isValid || form.formState.isSubmitting} // ← desativa até o form ser válido
+                  className='flex w-full items-center space-x-2 bg-green-600 hover:bg-green-700 disabled:opacity-50 sm:w-fit'
+                >
                   <Calendar className='h-4 w-4' />
-                  <span>Confirmar Agendamento</span>
+                  <p>Confirmar Agendamento</p>
                 </Button>
               )}
             </div>

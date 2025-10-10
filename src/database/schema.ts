@@ -65,7 +65,6 @@ export const appointment = pgTable('appointment', {
   gender: text('gender').notNull(),
   maritalStatus: text('marital_status').notNull(),
 
-  // Contact Information
   phone: text('phone').notNull(),
   commercialPhone: text('commercial_phone'),
   address: text('address').notNull(),

@@ -1,4 +1,3 @@
-// hooks/useAppointments.ts
 import { Appointment } from '@/types/appointment-type'
 import { useEffect, useState } from 'react'
 

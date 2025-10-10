@@ -1,4 +1,3 @@
-// PaginationControls.tsx
 'use client'
 
 import { Button } from '@/components/ui-components/button'

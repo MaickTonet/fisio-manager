@@ -1,7 +1,6 @@
-// hooks/useZipCodeSearch.ts
-import { FormData } from '../components/new-appointment-form/new-appointment-form'
 import { useState } from 'react'
 import { UseFormGetValues, UseFormSetValue } from 'react-hook-form'
+import { FormData } from '../components/new-appointment-form/new-appointment-form'
 
 export function useZipCodeSearch(formGetValues: UseFormGetValues<FormData>, formSetValue: UseFormSetValue<FormData>) {
   const [zipCodeCity, setZipCodeCity] = useState<string>('')
