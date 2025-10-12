@@ -22,7 +22,7 @@ export const newAppointmentSchema = z.object({
   education: z.enum(['elementary', 'middle', 'high', 'technical', 'undergraduate', 'graduate', 'postgraduate'], { error: 'Selecione a escolaridade' }),
   profession: z.string('Insira uma profissão válida').min(1, 'Profissão é obrigatória').max(100, 'Profissão muito longo'),
   clinicalDiagnosis: z.string().max(400, 'Diagnóstico clínico muito longo').optional(),
-  symptoms: z.array(z.string()).min(1, 'Selecione pelo menos um sintoma').optional(),
+  symptoms: z.array(z.string()).optional(),
   symptomsDescription: z.string().min(1, 'Descreva seus sintomas').max(100, 'Descreva seus sintomas muito longo').optional(),
   hasInsurance: z.boolean(),
   insuranceDescription: z.string().min(1, 'Descreva o plano de saúde').max(100, 'Descreva o plano de saúde muito longo').optional(),

@@ -190,18 +190,20 @@ export default async function AppointmentViewPage({ params }: AppointmentViewPag
                     <dt>Diagnóstico Clínico</dt>
                     <dd>{appointmentData.clinicalDiagnosis ?? '-'}</dd>
                   </div>
-                  <div>
-                    <dt>Sintomas</dt>
-                    <dd>
-                      <ul className='flex flex-wrap gap-2'>
-                        {appointmentData.symptoms.map((symptom: string, index: number) => (
-                          <li key={index} className='inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800'>
-                            {symptom}
-                          </li>
-                        ))}
-                      </ul>
-                    </dd>
-                  </div>
+                  {appointmentData.symptoms.length > 0 && (
+                    <div>
+                      <dt>Sintomas</dt>
+                      <dd>
+                        <ul className='flex flex-wrap gap-2'>
+                          {appointmentData.symptoms.map((symptom: string, index: number) => (
+                            <li key={index} className='inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800'>
+                              {symptom}
+                            </li>
+                          ))}
+                        </ul>
+                      </dd>
+                    </div>
+                  )}
                   <div>
                     <dt>Descrição dos Sintomas</dt>
                     <dd>{appointmentData.symptomsDescription ?? '-'}</dd>

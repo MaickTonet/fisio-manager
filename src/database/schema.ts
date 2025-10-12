@@ -95,3 +95,10 @@ export const appointment = pgTable('appointment', {
   userId: text('user_id').references(() => user.id, { onDelete: 'set null' }),
   status: text('status').notNull(),
 })
+
+export const symptom = pgTable('symptom', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull(),
+  active: boolean('active').notNull(),
+  symptomIndex: integer('symptom_index').notNull(),
+})

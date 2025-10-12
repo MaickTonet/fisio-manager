@@ -23,16 +23,20 @@ export function NavMain() {
         </SidebarMenu>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton>
-              <LayoutDashboard size={20} />
-              <p>Dashboard</p>
-            </SidebarMenuButton>
+            <Link href={'/'}>
+              <SidebarMenuButton>
+                <LayoutDashboard size={20} />
+                <p>Dashboard</p>
+              </SidebarMenuButton>
+            </Link>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton>
-              <List size={20} />
-              <p>Lista de sintomas</p>
-            </SidebarMenuButton>
+            <Link href={'/symptoms-list'}>
+              <SidebarMenuButton>
+                <List size={20} />
+                <p>Lista de sintomas</p>
+              </SidebarMenuButton>
+            </Link>
           </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton>

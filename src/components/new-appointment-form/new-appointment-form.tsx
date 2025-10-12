@@ -2,6 +2,7 @@
 
 import { createAppointment } from '@/actions/create-appointment'
 import { newAppointmentSchema } from '@/types/schemas/new-appointment-schema'
+import { Symptom } from '@/types/symptom-type'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Calendar, ChevronLeft, ChevronRight, Clock, FileText, User } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -47,7 +48,7 @@ const steps = [
   },
 ]
 
-export function NewAppointmentForm() {
+export function NewAppointmentForm({ symptoms }: { symptoms: Symptom[] }) {
   const [currentStep, setCurrentStep] = useState(1)
   const router = useRouter()
 
@@ -111,7 +112,7 @@ export function NewAppointmentForm() {
       case 2:
         return <ContactInfoStep />
       case 3:
-        return <MedicalInfoStep />
+        return <MedicalInfoStep symptoms={symptoms} />
       case 4:
         return <ScheduleStep />
       default:
