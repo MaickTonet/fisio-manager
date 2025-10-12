@@ -1,89 +1,154 @@
 'use client'
 
 import { Button } from '@/components/ui-components/button'
-import { Checkbox } from '@/components/ui-components/checkbox'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui-components/dropdown-menu'
 import { ColumnDef } from '@tanstack/react-table'
 
 import StatusBadge from '@/components/status-badge-map/status-badge'
+import { appointmentSchema } from '@/types/schemas/appointment-schema'
+import { educationLevelsMap } from '@/utils/maps/education-levels-map'
+import { genreMap } from '@/utils/maps/genre-map'
+import { maritalStatusMap } from '@/utils/maps/marital-status-map'
 import { IconDotsVertical } from '@tabler/icons-react'
+import { ArrowDown, ArrowUp, ArrowUpRight } from 'lucide-react'
 import Link from 'next/link'
 import { z } from 'zod'
 
-export const schema = z.object({
-  id: z.string(),
-  patientName: z.string(),
-  status: z.string(),
-  selectedDate: z.date(),
-  selectedTime: z.string(),
-})
-
-export const columns: ColumnDef<z.infer<typeof schema>>[] = [
+export const columns: ColumnDef<z.infer<typeof appointmentSchema>>[] = [
   {
-    id: 'select',
-    header: ({ table }) => (
-      <div className='flex items-center justify-center'>
-        <Checkbox
-          checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate')}
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label='Selecionar todos'
-        />
-      </div>
-    ),
+    id: 'link-to-appointment-page',
+    header: 'Acessar',
     cell: ({ row }) => (
-      <div className='flex items-center justify-center'>
-        <Checkbox checked={row.getIsSelected()} onCheckedChange={(value) => row.toggleSelected(!!value)} aria-label='Selecionar linha' />
-      </div>
+      <Link href={`/appointment/${row.original.id}`}>
+        <Button variant={'ghost'}>
+          <ArrowUpRight className='text-zinc-500' />
+        </Button>
+      </Link>
     ),
   },
   {
     accessorKey: 'patientName',
-    header: () => <div className='ml-2'>Nome do paciente</div>,
-    cell: ({ row }) => (
-      <div className='ml-2 truncate'>
-        <Link className='hover:text-primary transition-colors hover:underline' href={`/appointment/${row.original.id}`}>
-          {row.original.patientName}
-        </Link>
-      </div>
+    header: ({ column }) => (
+      <button className='flex cursor-pointer items-center gap-1 transition-colors hover:text-black/60' onClick={() => column.toggleSorting()}>
+        Nome do paciente
+        {column.getIsSorted() === 'asc' && <ArrowUp size={16} />}
+        {column.getIsSorted() === 'desc' && <ArrowDown size={16} />}
+      </button>
     ),
+    enableSorting: true,
+  },
+  { accessorKey: 'status', header: 'Status', cell: ({ row }) => <StatusBadge status={row.original.status} />, enableSorting: true },
+  {
+    accessorKey: 'age',
+    header: ({ column }) => (
+      <button className='flex cursor-pointer items-center gap-1 transition-colors hover:text-black/60' onClick={() => column.toggleSorting()}>
+        Idade
+        {column.getIsSorted() === 'asc' && <ArrowUp size={16} />}
+        {column.getIsSorted() === 'desc' && <ArrowDown size={16} />}
+      </button>
+    ),
+    cell: ({ row }) => <div className='text-center'>{row.original.age}</div>,
+    enableSorting: true,
   },
   {
-    accessorKey: 'status',
-    header: 'Status',
-    cell: ({ row }) => <StatusBadge status={row.original.status} />,
+    accessorKey: 'birthDate',
+    header: ({ column }) => (
+      <button className='flex cursor-pointer items-center gap-1 transition-colors hover:text-black/60' onClick={() => column.toggleSorting()}>
+        Data de nascimento
+        {column.getIsSorted() === 'asc' && <ArrowUp size={16} />}
+        {column.getIsSorted() === 'desc' && <ArrowDown size={16} />}
+      </button>
+    ),
+    cell: ({ row }) => <div className='text-center'>{new Date(row.original.birthDate).toLocaleDateString()}</div>,
+    enableSorting: true,
+  },
+  {
+    accessorKey: 'gender',
+    header: ({ column }) => (
+      <button className='flex cursor-pointer items-center gap-1 transition-colors hover:text-black/60' onClick={() => column.toggleSorting()}>
+        Gênero
+        {column.getIsSorted() === 'asc' && <ArrowUp size={16} />}
+        {column.getIsSorted() === 'desc' && <ArrowDown size={16} />}
+      </button>
+    ),
+    cell: ({ row }) => genreMap[row.original.gender],
+    enableSorting: true,
+    sortingFn: (rowA, rowB) => {
+      const order = ['Masculino', 'Feminino']
+      const a = order.indexOf(genreMap[rowA.original.gender] || '')
+      const b = order.indexOf(genreMap[rowB.original.gender] || '')
+      return a - b
+    },
+  },
+
+  { accessorKey: 'maritalStatus', header: 'Estado civil', cell: ({ row }) => maritalStatusMap[row.original.maritalStatus], enableSorting: true },
+  { accessorKey: 'phone', header: 'Telefone' },
+  { accessorKey: 'commercialPhone', header: 'Telefone comercial' },
+  { accessorKey: 'address', header: 'Endereço' },
+  { accessorKey: 'neighborhood', header: 'Bairro' },
+  { accessorKey: 'city', header: 'Cidade', enableSorting: true },
+  { accessorKey: 'state', header: 'Estado', cell: ({ row }) => <div className='text-center'>{row.original.state}</div>, enableSorting: true },
+  { accessorKey: 'zipCode', header: 'CEP' },
+  { accessorKey: 'education', header: 'Escolaridade', cell: ({ row }) => educationLevelsMap[row.original.education], enableSorting: true },
+  {
+    accessorKey: 'hasInsurance',
+    header: ({ column }) => (
+      <button className='flex cursor-pointer items-center gap-1 transition-colors hover:text-black/60' onClick={() => column.toggleSorting()}>
+        Possui plano de saúde
+        {column.getIsSorted() === 'asc' && <ArrowUp size={16} />}
+        {column.getIsSorted() === 'desc' && <ArrowDown size={16} />}
+      </button>
+    ),
+    cell: ({ row }) => <div className='text-center'>{row.original.hasInsurance ? 'Sim' : 'Não'}</div>,
+    enableSorting: true,
+    sortingFn: (rowA, rowB) => {
+      return rowA.original.hasInsurance === rowB.original.hasInsurance ? 0 : rowA.original.hasInsurance ? 1 : -1
+    },
   },
 
   {
     accessorKey: 'selectedDate',
-    header: () => <div className='flex items-center justify-center'>Data da consulta</div>,
-    cell: ({ row }) => <div className='flex items-center justify-center'>{new Date(row.original.selectedDate).toLocaleDateString()}</div>,
+    header: ({ column }) => (
+      <button className='flex cursor-pointer items-center gap-1 transition-colors hover:text-black/60' onClick={() => column.toggleSorting()}>
+        Data da consulta
+        {column.getIsSorted() === 'asc' && <ArrowUp size={16} />}
+        {column.getIsSorted() === 'desc' && <ArrowDown size={16} />}
+      </button>
+    ),
+    cell: ({ row }) => <div className='text-center'>{new Date(row.original.selectedDate).toLocaleDateString()}</div>,
+    enableSorting: true,
   },
   {
     accessorKey: 'selectedTime',
-    header: () => <div className='flex items-center justify-center'>Horário da consulta</div>,
-    cell: ({ row }) => <div className='flex items-center justify-center'>{row.original.selectedTime}</div>,
+    header: ({ column }) => (
+      <button className='flex cursor-pointer items-center gap-1 transition-colors hover:text-black/60' onClick={() => column.toggleSorting()}>
+        Horário da consulta
+        {column.getIsSorted() === 'asc' && <ArrowUp size={16} />}
+        {column.getIsSorted() === 'desc' && <ArrowDown size={16} />}
+      </button>
+    ),
+    cell: ({ row }) => <div className='text-center'>{row.original.selectedTime}</div>,
+    enableSorting: true,
   },
   {
     id: 'actions',
-    header: () => <div className='flex items-center justify-center'>Opções</div>,
+    header: 'Opções',
     cell: () => (
-      <div className='flex items-center justify-center'>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant='ghost' className='data-[state=open]:bg-muted text-muted-foreground flex size-8' size='icon'>
-              <IconDotsVertical />
-              <span className='sr-only'>Exibir opções</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align='end' className='w-32'>
-            <DropdownMenuItem>Edit</DropdownMenuItem>
-            <DropdownMenuItem>Make a copy</DropdownMenuItem>
-            <DropdownMenuItem>Favorite</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem variant='destructive'>Delete</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant='ghost' size='icon'>
+            <IconDotsVertical />
+            <span className='sr-only'>Exibir opções</span>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align='end' className='w-32'>
+          <DropdownMenuItem>Edit</DropdownMenuItem>
+          <DropdownMenuItem>Make a copy</DropdownMenuItem>
+          <DropdownMenuItem>Favorite</DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem variant='destructive'>Delete</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     ),
   },
 ]

@@ -1,13 +1,11 @@
+import { getAppointments } from '@/actions/get-appointments'
 import { AppSidebar } from '@/components/dashboard/app-sidebar'
 import { DataTable } from '@/components/dashboard/data-table/data-table'
 import { SectionCards } from '@/components/dashboard/section-cards'
 import { SiteHeader } from '@/components/dashboard/site-header'
 import { Button } from '@/components/ui-components/button'
 import { SidebarInset, SidebarProvider } from '@/components/ui-components/sidebar'
-import { db } from '@/database/database'
-import { appointment } from '@/database/schema'
 import { auth } from '@/lib/auth'
-import { desc } from 'drizzle-orm'
 import { CirclePlus, Grid2x2X } from 'lucide-react'
 import { Metadata } from 'next'
 import { headers } from 'next/headers'
@@ -28,7 +26,16 @@ export default async function DashboardPage() {
 
   if (!session) redirect('/login')
 
-  const appointments = await db.select().from(appointment).orderBy(desc(appointment.createdAt))
+  const appointments = await getAppointments()
+
+  const formattedAppointments = appointments.map((appointments) => ({
+    ...appointments,
+    symptoms: appointments.symptoms ?? [],
+    commercialPhone: appointments.commercialPhone ?? undefined,
+    clinicalDiagnosis: appointments.clinicalDiagnosis ?? undefined,
+    symptomsDescription: appointments.symptomsDescription ?? undefined,
+    insuranceDescription: appointments.insuranceDescription ?? undefined,
+  }))
 
   return (
     <SidebarProvider style={{ '--sidebar-width': 'calc(var(--spacing) * 72)', '--header-height': 'calc(var(--spacing) * 12)' } as React.CSSProperties}>
@@ -40,8 +47,7 @@ export default async function DashboardPage() {
             <div className='@container/main flex flex-1 flex-col gap-2'>
               <div className='flex flex-col gap-4 py-4 md:gap-6 md:py-6'>
                 <SectionCards appointments={appointments} />
-                <div className='px-4 lg:px-6'></div>
-                <DataTable data={appointments} />
+                <DataTable data={formattedAppointments} />
               </div>
             </div>
           </div>

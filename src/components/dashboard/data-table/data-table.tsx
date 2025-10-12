@@ -19,26 +19,56 @@ import { z } from 'zod'
 
 import { Button } from '@/components/ui-components/button'
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui-components/dropdown-menu'
+import { Input } from '@/components/ui-components/input'
 import { Label } from '@/components/ui-components/label'
+import { ScrollArea, ScrollBar } from '@/components/ui-components/scroll-area'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui-components/select'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui-components/table'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui-components/tabs'
-import { columns, schema } from './data-table-columns'
+import { appointmentSchema } from '@/types/schemas/appointment-schema'
+import { Search } from 'lucide-react'
+import { useEffect } from 'react'
+import { columns } from './data-table-columns'
 import { DataTablePagination } from './data-table-pagination'
 
 type DataTableProps = {
-  data: z.infer<typeof schema>[]
+  data: z.infer<typeof appointmentSchema>[]
 }
 
 export function DataTable({ data }: DataTableProps) {
-  const [rowSelection, setRowSelection] = React.useState({})
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [pagination, setPagination] = React.useState({ pageIndex: 0, pageSize: 10 })
   const [activeTab, setActiveTab] = React.useState<'all' | 'new' | 'assigned' | 'finished'>('all')
+  const searchInputRef = React.useRef<HTMLInputElement>(null)
+  const [debouncedSearch, setDebouncedSearch] = React.useState('')
+  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({
+    patientName: true,
+    status: true,
+    age: true,
+    birthDate: false,
+    gender: true,
+    maritalStatus: false,
+    phone: true,
+    commercialPhone: false,
+    address: false,
+    neighborhood: false,
+    city: false,
+    state: false,
+    zipCode: false,
+    hasInsurance: true,
+    emergencyContact: false,
+    education: false,
+    profession: false,
+    clinicalDiagnosis: false,
+    symptoms: false,
+    symptomsDescription: false,
+    insuranceDescription: false,
+    selectedDate: true,
+    selectedTime: true,
+  })
 
-  const filteredData = React.useMemo(() => {
+  const filteredByStatus = React.useMemo(() => {
     switch (activeTab) {
       case 'new':
         return data.filter((item) => item.status === 'new')
@@ -51,19 +81,45 @@ export function DataTable({ data }: DataTableProps) {
     }
   }, [activeTab, data])
 
+  useEffect(() => {
+    const input = searchInputRef.current
+    if (!input) return
+
+    let timeout: NodeJS.Timeout
+
+    const handleInput = () => {
+      clearTimeout(timeout)
+      timeout = setTimeout(() => {
+        setDebouncedSearch(input.value.toLowerCase())
+      }, 300)
+    }
+
+    input.addEventListener('input', handleInput)
+    return () => input.removeEventListener('input', handleInput)
+  }, [])
+
+  const filteredData = React.useMemo(() => {
+    const term = debouncedSearch.toLowerCase()
+    if (!term) return filteredByStatus
+    return filteredByStatus.filter(
+      (item) => item.patientName.toLowerCase().includes(term),
+      // item.city.toLowerCase().includes(term) ||
+      // item.neighborhood.toLowerCase().includes(term) ||
+      // item.address.toLowerCase().includes(term),
+    )
+  }, [filteredByStatus, debouncedSearch])
+
   const table = useReactTable({
     data: filteredData,
     columns,
     state: {
       sorting,
       columnVisibility,
-      rowSelection,
       columnFilters,
       pagination,
     },
+    enableSortingRemoval: true,
     getRowId: (row) => row.id.toString(),
-    enableRowSelection: true,
-    onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
@@ -111,58 +167,72 @@ export function DataTable({ data }: DataTableProps) {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align='end' className='w-56 rounded-xl'>
-            {table
-              .getAllColumns()
-              .filter((column) => typeof column.accessorFn !== 'undefined' && column.getCanHide())
-              .map((column) => (
-                <DropdownMenuCheckboxItem
-                  key={column.id}
-                  className='rounded-xl capitalize'
-                  checked={column.getIsVisible()}
-                  onCheckedChange={(value) => column.toggleVisibility(!!value)}
-                >
-                  {/* @ts-ignore */}
-                  {flexRender(column.columnDef.header, { column, table })}
-                </DropdownMenuCheckboxItem>
-              ))}
+            <ScrollArea className='h-72'>
+              {table
+                .getAllColumns()
+                .filter((column) => typeof column.accessorFn !== 'undefined' && column.getCanHide())
+                .map((column) => (
+                  <DropdownMenuCheckboxItem
+                    key={column.id}
+                    className='mr-3 cursor-pointer rounded-xl'
+                    checked={column.getIsVisible()}
+                    onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                  >
+                    {/* @ts-ignore */}
+                    {flexRender(column.columnDef.header, { column, table })}
+                  </DropdownMenuCheckboxItem>
+                ))}
+            </ScrollArea>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
 
-      <TabsContent value={activeTab} className='relative flex flex-col gap-4 overflow-auto px-4 lg:px-6'>
-        <div className='overflow-hidden rounded-lg border'>
-          <Table>
-            <TableHeader className='bg-muted sticky top-0 z-10'>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <TableHead key={header.id} colSpan={header.colSpan}>
-                      {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                    </TableHead>
-                  ))}
-                </TableRow>
-              ))}
-            </TableHeader>
+      <div className='px-4 lg:px-6'>
+        <div className='relative w-full'>
+          <Search className='text-muted-foreground absolute top-2.5 left-3 h-4 w-4' />
+          <Input placeholder='Buscar por nome, cidade, bairro ou endereço...' className='pl-9 text-base' ref={searchInputRef} />
+        </div>
+      </div>
 
-            <TableBody>
-              {table.getRowModel().rows.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+      <TabsContent value={activeTab} className='relative flex flex-col gap-4 overflow-auto px-4 lg:px-6'>
+        <ScrollArea className='overflow-hidden rounded-lg border'>
+          <div className=''>
+            <Table>
+              <TableHeader className='bg-muted sticky top-0 z-10'>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => (
+                      <TableHead className='px-6' key={header.id} colSpan={header.colSpan}>
+                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                      </TableHead>
                     ))}
                   </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={columns.length} className='h-24 text-center'>
-                    Sem resultados
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
+                ))}
+              </TableHeader>
+
+              <TableBody>
+                {table.getRowModel().rows.length ? (
+                  table.getRowModel().rows.map((row) => (
+                    <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell className='px-6' key={cell.id}>
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={columns.length} className='h-24 text-center'>
+                      Sem resultados
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+          <ScrollBar orientation='horizontal' />
+        </ScrollArea>
         <DataTablePagination table={table} />
       </TabsContent>
     </Tabs>
