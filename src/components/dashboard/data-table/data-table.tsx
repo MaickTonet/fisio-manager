@@ -179,7 +179,7 @@ export function DataTable({ data }: DataTableProps) {
                     checked={column.getIsVisible()}
                     onCheckedChange={(value) => column.toggleVisibility(!!value)}
                   >
-                    {/* @ts-ignore */}
+                    {/* @ts-expect-error */}
                     {flexRender(column.columnDef.header, { column, table })}
                   </DropdownMenuCheckboxItem>
                 ))}
