@@ -4,11 +4,13 @@ import { Button } from '@/components/ui-components/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui-components/dropdown-menu'
 import { ColumnDef } from '@tanstack/react-table'
 
+import { updateAppointmentStatusAction } from '@/actions/update-appointment-status'
 import StatusBadge from '@/components/status-badge-map/status-badge'
 import { appointmentSchema } from '@/types/schemas/appointment-schema'
 import { educationLevelsMap } from '@/utils/maps/education-levels-map'
 import { genreMap } from '@/utils/maps/genre-map'
 import { maritalStatusMap } from '@/utils/maps/marital-status-map'
+import { statusBadgeMap } from '@/utils/maps/status-badge-map'
 import { IconDotsVertical } from '@tabler/icons-react'
 import { ArrowDown, ArrowUp, ArrowUpRight } from 'lucide-react'
 import Link from 'next/link'
@@ -37,7 +39,35 @@ export const columns: ColumnDef<z.infer<typeof appointmentSchema>>[] = [
     ),
     enableSorting: true,
   },
-  { accessorKey: 'status', header: 'Status', cell: ({ row }) => <StatusBadge status={row.original.status} />, enableSorting: true },
+  {
+    accessorKey: 'status',
+    header: 'Status',
+    cell: ({ row }) => {
+      const currentStatus = row.original.status
+
+      async function handleStatusChange(newStatus: 'new' | 'assigned' | 'done') {
+        if (newStatus === currentStatus) return
+        await updateAppointmentStatusAction(row.original.id, newStatus)
+        // window.location.reload()
+      }
+
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger className='cursor-pointer rounded-xl'>
+            <StatusBadge status={currentStatus} />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align='center' className='w-32'>
+            {['new', 'assigned', 'done'].map((status) => (
+              <DropdownMenuItem key={status} onClick={() => handleStatusChange(status as any)} className='cursor-pointer'>
+                {statusBadgeMap[status]}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )
+    },
+    enableSorting: true,
+  },
   {
     accessorKey: 'age',
     header: ({ column }) => (

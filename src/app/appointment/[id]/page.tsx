@@ -21,7 +21,7 @@ export default async function AppointmentViewPage({ params }: AppointmentViewPag
 
   if (!session) redirect('/login')
 
-  const { id } = params
+  const { id } = await params
 
   const result = await getAppointment(id)
   const data = result[0]

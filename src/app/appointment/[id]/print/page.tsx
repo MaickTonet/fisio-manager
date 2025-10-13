@@ -19,7 +19,7 @@ export default async function PrintPage({ params }: AppointmentPrintPageProps) {
 
   if (!session) redirect('/login')
 
-  const { id } = params
+  const { id } = await params
 
   const result = await getAppointment(id)
   const data = result[0]
