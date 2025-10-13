@@ -102,10 +102,11 @@ export function DataTable({ data }: DataTableProps) {
     const term = debouncedSearch.toLowerCase()
     if (!term) return filteredByStatus
     return filteredByStatus.filter(
-      (item) => item.patientName.toLowerCase().includes(term),
-      // item.city.toLowerCase().includes(term) ||
-      // item.neighborhood.toLowerCase().includes(term) ||
-      // item.address.toLowerCase().includes(term),
+      (item) =>
+        item.patientName.toLowerCase().includes(term) ||
+        item.city.toLowerCase().includes(term) ||
+        item.neighborhood.toLowerCase().includes(term) ||
+        item.address.toLowerCase().includes(term),
     )
   }, [filteredByStatus, debouncedSearch])
 

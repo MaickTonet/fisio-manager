@@ -1,21 +1,29 @@
+import { getAppointment } from '@/actions/get-appointments'
 import StatusBadge from '@/components/status-badge-map/status-badge'
 import { Button } from '@/components/ui-components/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui-components/card'
-import { db } from '@/database/database'
-import { appointment } from '@/database/schema'
+import { auth } from '@/lib/auth'
+import { formatDate } from '@/utils/format-date'
 import { educationLevelsMap } from '@/utils/maps/education-levels-map'
 import { genreMap } from '@/utils/maps/genre-map'
 import { maritalStatusMap } from '@/utils/maps/marital-status-map'
-import { eq } from 'drizzle-orm'
-import { AlertCircle, ArrowLeft, Briefcase, Calendar, Clock, FileText, MapPin, Pen, Phone, Printer, Shield, User } from 'lucide-react'
+import { AlertCircle, ArrowLeft, Briefcase, Calendar, Clock, FileText, Pen, Phone, Printer, Shield, User } from 'lucide-react'
+import { headers } from 'next/headers'
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 
 type AppointmentViewPageProps = { params: { id: string } }
 
 export default async function AppointmentViewPage({ params }: AppointmentViewPageProps) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  })
+
+  if (!session) redirect('/login')
+
   const { id } = params
 
-  const result = await db.select().from(appointment).where(eq(appointment.id, id))
+  const result = await getAppointment(id)
   const data = result[0]
 
   if (!data) {
@@ -25,25 +33,6 @@ export default async function AppointmentViewPage({ params }: AppointmentViewPag
   const appointmentData = {
     ...data,
     symptoms: data.symptoms ?? [],
-  }
-
-  const getStatusColor = (status: string) => {
-    const colors = {
-      Confirmado: 'bg-green-100 text-green-800 border-green-200',
-      Pendente: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-      Cancelado: 'bg-red-100 text-red-800 border-red-200',
-      Concluído: 'bg-blue-100 text-blue-800 border-blue-200',
-    }
-    return colors[status as keyof typeof colors] || 'bg-gray-100 text-gray-800 border-gray-200'
-  }
-
-  const formatDate = (date: Date | string | null) => {
-    if (!date) return '-'
-    return new Date(date).toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    })
   }
 
   return (
@@ -67,10 +56,12 @@ export default async function AppointmentViewPage({ params }: AppointmentViewPag
                     <Pen className='mr-2 h-4 w-4' />
                     Editar
                   </Button>
-                  <Button variant='outline' size='sm' className='flex items-center rounded-xl'>
-                    <Printer className='mr-2 h-4 w-4' />
-                    Imprimir
-                  </Button>
+                  <Link href={`/appointment/${appointmentData.id}/print`} target='_blank'>
+                    <Button variant='outline' size='sm' className='flex items-center rounded-xl'>
+                      <Printer className='mr-2 h-4 w-4' />
+                      Imprimir
+                    </Button>
+                  </Link>
                 </nav>
               </div>
             </CardContent>
@@ -261,26 +252,6 @@ export default async function AppointmentViewPage({ params }: AppointmentViewPag
                 </CardContent>
               </Card>
             </article>
-
-            <nav aria-labelledby='acoes-rapidas'>
-              <Card>
-                <CardHeader>
-                  <CardTitle id='acoes-rapidas' className='text-lg font-semibold'>
-                    Ações Rápidas
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className='space-y-3'>
-                  <Button variant='outline' className='flex w-full items-center justify-center'>
-                    <Phone className='mr-2 h-4 w-4' />
-                    Ligar para Paciente
-                  </Button>
-                  <Button variant='outline' className='flex w-full items-center justify-center'>
-                    <MapPin className='mr-2 h-4 w-4' />
-                    Ver Localização
-                  </Button>
-                </CardContent>
-              </Card>
-            </nav>
 
             <section aria-labelledby='historico'>
               <Card>
