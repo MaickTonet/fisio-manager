@@ -13,7 +13,7 @@ import { Button } from '@/components/ui-components/button'
 import { Symptom } from '@/types/symptom-type'
 import { Trash2 } from 'lucide-react'
 
-export function AlertDialogDemo({ symptom, deleteSymptom }: { symptom: Symptom; deleteSymptom: (id: string) => void }) {
+export function ConfirmDeleteSymptomDialog({ symptom, deleteSymptom }: { symptom: Symptom; deleteSymptom: (id: string) => void }) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>

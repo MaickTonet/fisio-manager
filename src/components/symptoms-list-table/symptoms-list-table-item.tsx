@@ -6,7 +6,7 @@ import { Symptom } from '@/types/symptom-type'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { GripVertical } from 'lucide-react'
-import { AlertDialogDemo } from '../confirm-delete-symptom-dialog/confirm-delete-symptom-dialog'
+import { ConfirmDeleteSymptomDialog } from '../confirm-delete-symptom-dialog/confirm-delete-symptom-dialog'
 
 interface SymptomsListTableItemProps {
   symptom: Symptom
@@ -42,7 +42,7 @@ export default function SymptomsListTableItem({ symptom, toggleSymptom, deleteSy
         </span>
         <Switch id={`switch-${symptom.id}`} checked={symptom.active} onCheckedChange={() => toggleSymptom(symptom.id)} />
 
-        <AlertDialogDemo symptom={symptom} deleteSymptom={deleteSymptom} />
+        <ConfirmDeleteSymptomDialog symptom={symptom} deleteSymptom={deleteSymptom} />
       </div>
     </div>
   )

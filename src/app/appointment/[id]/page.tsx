@@ -1,5 +1,5 @@
 import { getAppointment } from '@/actions/get-appointments'
-import StatusBadge from '@/components/status-badge-map/status-badge'
+import DropdownStatusBadge from '@/components/dropdown-status-badge/dropdown-status-badget'
 import { Button } from '@/components/ui-components/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui-components/card'
 import { auth } from '@/lib/auth'
@@ -246,7 +246,7 @@ export default async function AppointmentViewPage({ params }: AppointmentViewPag
                   <div className='flex items-center gap-x-2'>
                     <dt>Status:</dt>
                     <dd>
-                      <StatusBadge status={appointmentData.status} />
+                      <DropdownStatusBadge appointmentId={appointmentData.id} currentStatus={appointmentData.status as 'new' | 'assigned' | 'done'} />
                     </dd>
                   </div>
                 </CardContent>
