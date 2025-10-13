@@ -179,7 +179,7 @@ export function DataTable({ data }: DataTableProps) {
                     checked={column.getIsVisible()}
                     onCheckedChange={(value) => column.toggleVisibility(!!value)}
                   >
-                    {/* @ts-expect-error */}
+                    {/* @ts-expect-error missing required 'header' property from TanStack Table HeaderContext */}
                     {flexRender(column.columnDef.header, { column, table })}
                   </DropdownMenuCheckboxItem>
                 ))}
