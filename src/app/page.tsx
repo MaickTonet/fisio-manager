@@ -1,7 +1,6 @@
 import { getAppointments } from '@/actions/get-appointments'
 import { AppSidebar } from '@/components/dashboard/app-sidebar'
 import { DataTable } from '@/components/dashboard/data-table/data-table'
-import { SectionCards } from '@/components/dashboard/section-cards'
 import { SiteHeader } from '@/components/dashboard/site-header'
 import { Button } from '@/components/ui-components/button'
 import { SidebarInset, SidebarProvider } from '@/components/ui-components/sidebar'
@@ -46,7 +45,6 @@ export default async function DashboardPage() {
           <div className='flex flex-1 flex-col'>
             <div className='@container/main flex flex-1 flex-col gap-2'>
               <div className='flex flex-col gap-4 py-4 md:gap-6 md:py-6'>
-                <SectionCards appointments={appointments} />
                 <DataTable data={formattedAppointments} />
               </div>
             </div>

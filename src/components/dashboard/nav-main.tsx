@@ -1,7 +1,7 @@
 'use client'
 
 import { SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui-components/sidebar'
-import { CirclePlus, LayoutDashboard, List, Table } from 'lucide-react'
+import { CirclePlus, LayoutDashboard, List } from 'lucide-react'
 import Link from 'next/link'
 
 export function NavMain() {
@@ -37,12 +37,6 @@ export function NavMain() {
                 <p>Lista de sintomas</p>
               </SidebarMenuButton>
             </Link>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton>
-              <Table size={20} />
-              <p>Relatórios</p>
-            </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarGroupContent>
